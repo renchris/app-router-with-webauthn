@@ -37,7 +37,6 @@ module.exports = {
       "no-use-before-define": "off",
       "arrow-body-style": ["error", "as-needed"],
       "@typescript-eslint/no-use-before-define": ["error"],
-      "@typescript-eslint/explicdit-function-return-type": "off",
       "@typescript-eslint/no-unused-vars": "off",
       "@typescript-eslint/semi": ["error", "never"],
       "react/jsx-filename-extension": [

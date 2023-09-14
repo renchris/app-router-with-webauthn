@@ -11,3 +11,9 @@ export const registeredUserIdToCookieStorage = async (
   session.userId = user.id
   await session.save()
 }
+
+// eslint-disable-next-line import/prefer-default-export
+export const getRegisteredUserIdFromCookieStorage = async (): Promise<number | undefined> => {
+  const session = await getServerActionSession()
+  return session.userId
+}

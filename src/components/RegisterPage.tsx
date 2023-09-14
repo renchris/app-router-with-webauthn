@@ -11,6 +11,7 @@ import { startRegistration } from '@simplewebauthn/browser'
 import type { VerifiedRegistrationResponse } from '@simplewebauthn/server'
 import Link from 'next/link'
 import { registerUser } from '@lib/auth'
+import { registeredUserIdToCookieStorage } from '@app/serverActions'
 
 const RegisterPage = ({ getRegistrationOptions, verifyRegistration }:
 {
@@ -64,26 +65,13 @@ const RegisterPage = ({ getRegistrationOptions, verifyRegistration }:
         verificationResponse,
       )
 
-      const registrationResult = await fetch('http://localhost:3000/api/auth/register', {
-        method: 'POST',
-        body: JSON.stringify({
-          user,
-        }),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
-
-      if (registrationResult.ok) {
-        router.push('/admin')
-      } else {
-        const errorData = await registrationResult.json()
-        if (errorData && errorData.message) {
-          setError(errorData.message)
-        } else {
-          setError('An unknown error occurred')
-        }
+      if (user instanceof Error) {
+        setError(user.message ? user.message : 'An unknown error occurred')
+        throw user
       }
+
+      registeredUserIdToCookieStorage(user)
+      router.push('/admin')
     } catch (err) {
       const registerError = err as Error
       setError(registerError.message)

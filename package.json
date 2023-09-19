@@ -20,7 +20,7 @@
     "@types/react-dom": "18.2.6",
     "cookie": "^0.5.0",
     "iron-session": "github:renchris/iron-session#v8-as-dependency",
-    "next": "13.4.9",
+    "next": "13.4.19",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "typescript": "5.1.3",

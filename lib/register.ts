@@ -1,4 +1,4 @@
-'use client'
+'use server'
 
 import { v4 as uuidv4 } from 'uuid'
 import {
@@ -20,7 +20,6 @@ const HOST_SETTINGS = {
   expectedRPID: process.env.RPID ?? 'localhost',
 }
 
-// eslint-disable-next-line import/prefer-default-export
 export const getRegistrationOptions = async (
   email: string,
   username: string,
@@ -48,7 +47,6 @@ export const getRegistrationOptions = async (
   return registrationOptions
 }
 
-// eslint-disable-next-line import/prefer-default-export
 export const verifyRegistration = async (
   credential: RegistrationResponseJSON,
   challenge: string,

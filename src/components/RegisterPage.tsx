@@ -10,8 +10,8 @@ import { PublicKeyCredentialCreationOptionsJSON, RegistrationResponseJSON } from
 import { startRegistration } from '@simplewebauthn/browser'
 import type { VerifiedRegistrationResponse } from '@simplewebauthn/server'
 import Link from 'next/link'
-import { registerUser } from '@lib/auth'
-import { registeredUserIdToCookieStorage } from '@app/serverActions'
+import { registerUser } from '@lib/database'
+import { registeredUserIdToCookieStorage } from '@lib/cookieActions'
 
 const RegisterPage = ({ getRegistrationOptions, verifyRegistration }:
 {

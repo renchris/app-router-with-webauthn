@@ -1,6 +1,6 @@
 'use server'
 
-import { getRegisteredUserIdFromCookieStorage } from '@app/serverActions'
+import { getRegisteredUserIdFromCookieStorage } from '@lib/cookieActions'
 
 async function getUserId(): Promise<number | string> {
   const userId = await getRegisteredUserIdFromCookieStorage()

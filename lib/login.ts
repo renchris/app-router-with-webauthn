@@ -3,22 +3,29 @@
 import {
   type VerifiedAuthenticationResponse,
   GenerateAuthenticationOptionsOpts,
+
+  VerifyAuthenticationResponseOpts,
+  verifyAuthenticationResponse,
 } from '@simplewebauthn/server'
 import { PublicKeyCredentialWithAssertionJSON } from '@github/webauthn-json'
 import {
   AuthenticationResponseJSON,
   PublicKeyCredentialRequestOptionsJSON,
+
+  AuthenticatorDevice,
 } from '@simplewebauthn/typescript-types'
 import prisma from '@lib/prisma'
 import {
   getCredentialsOfUser, getUserFromEmail,
+  updateCredentialSignCount,
 } from '@lib/database'
 import {
   User, Credential,
 } from '@prisma/client'
 import { generateAuthenticationOptions } from '@simplewebauthn/server'
-import { setChallengeToCookieStorage } from '@lib/cookieActions'
-import { verifyAuthentication } from './verifyAuthentication'
+import { setChallengeToCookieStorage, clearCookies } from '@lib/cookieActions'
+
+import { base64urlToBuffer } from '@lib/auth'
 
 const generateAuthenticationOptionsStep = async (
   usersCredentials: Credential[] | Error,
@@ -36,6 +43,65 @@ Promise<PublicKeyCredentialRequestOptionsJSON> => {
   const authenticationOptionsJSON = generateAuthenticationOptions(loginOptionsParameters)
   await setChallengeToCookieStorage(authenticationOptionsJSON.challenge)
   return authenticationOptionsJSON
+}
+
+export const verifyAuthenticationStep = async (
+  userCredential: Credential,
+  challenge: string,
+  authenticationResponse: AuthenticationResponseJSON,
+): Promise<VerifiedAuthenticationResponse> => {
+  let verification: VerifiedAuthenticationResponse
+
+  // const responseCredIDBuffer = await base64urlToBuffer(authenticationResponse.rawId)
+  // let dbAuthenticator: AuthenticatorDevice | undefined
+  // let matchedCredential: Credential | undefined
+
+  const dbAuthenticator: AuthenticatorDevice = {
+    credentialID: await base64urlToBuffer(userCredential.externalId),
+    credentialPublicKey: userCredential.publicKey,
+    counter: userCredential.signCount,
+  }
+
+  // userCredentials.forEach((credential) => {
+  //   if (Uint8ArraysAreEqual(credential.publicKey, responseCredIDBuffer)) {
+  //     dbAuthenticator = {
+  //       credentialID: await base64urlToBuffer(credential.externalId),
+  //       credentialPublicKey: credential.publicKey,
+  //       counter: credential.signCount,
+  //     }
+  //     matchedCredential = credential
+  //   }
+  // })
+
+  if (!dbAuthenticator) {
+    throw new Error('Authenticator is not registered with this site')
+  }
+
+  try {
+    const opts: VerifyAuthenticationResponseOpts = {
+      response: authenticationResponse,
+      expectedChallenge: challenge,
+      expectedOrigin: 'https://localhost',
+      expectedRPID: 'localhost',
+      authenticator: dbAuthenticator,
+      requireUserVerification: true,
+    }
+    verification = await verifyAuthenticationResponse(opts)
+  } catch (err) {
+    const verifyAuthenticationError = err as Error
+    throw new Error(verifyAuthenticationError.message)
+  }
+
+  const { verified, authenticationInfo } = verification
+
+  if (verified) {
+    // Update the authenticator's counter in the DB to the newest count in the authentication
+    updateCredentialSignCount(userCredential.externalId, authenticationInfo.newCounter)
+  }
+
+  await clearCookies()
+
+  return verification
 }
 
 export const getAuthenticationOptionsJSON = async (
@@ -85,7 +151,7 @@ export const loginProcess = async (
   }
 
   const verification: VerifiedAuthenticationResponse = await
-  verifyAuthentication(
+  verifyAuthenticationStep(
     userCredential,
     challenge,
     authenticationResponse,

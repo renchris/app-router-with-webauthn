@@ -27,14 +27,6 @@ const Login = () => {
     try {
       const authenticationOptionsJSON = await getAuthenticationOptionsJSON(email)
       const { challenge } = authenticationOptionsJSON
-      const credential = await get({
-        publicKey: {
-          challenge,
-          timeout: 60000,
-          userVerification: 'required',
-          rpId: 'localhost',
-        },
-      })
 
       const authenticationResponse:
       AuthenticationResponseJSON = await

@@ -51,7 +51,7 @@ const RegisterPage = ({ getRegistrationOptions, verifyRegistration }:
       creationOptionsJSON,
     )
 
-    const verificationResponse = await
+    const verificationResponse: VerifiedRegistrationResponse = await
     verifyRegistration(
       registrationResponse,
       creationOptionsJSON.challenge,

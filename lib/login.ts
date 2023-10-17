@@ -34,7 +34,7 @@ Promise<PublicKeyCredentialRequestOptionsJSON> => {
   const loginOptionsParameters: GenerateAuthenticationOptionsOpts = {
     timeout: 60000,
     allowCredentials: (usersCredentials as Credential[]).map((userCredential) => ({
-      id: Uint8Array.from(userCredential.externalId, (c) => c.charCodeAt(0)),
+      id: new Uint8Array(Buffer.from(userCredential.externalId, 'base64')),
       type: 'public-key',
     })),
     userVerification: 'required',
@@ -109,7 +109,6 @@ export const getAuthenticationOptionsJSON = async (
 ): Promise<PublicKeyCredentialRequestOptionsJSON> => {
   const userToLogin: User | Error = await getUserFromEmail(email)
   const usersCredentials: Credential[] | Error = await getCredentialsOfUser(userToLogin as User)
-
   const authenticationOptionsJSON = await
   generateAuthenticationOptionsStep(usersCredentials)
   return authenticationOptionsJSON

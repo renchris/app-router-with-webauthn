@@ -11,7 +11,7 @@ import { startRegistration } from '@simplewebauthn/browser'
 import type { VerifiedRegistrationResponse } from '@simplewebauthn/server'
 import Link from 'next/link'
 import { registerUser } from '@lib/database'
-import { registeredUserIdToCookieStorage } from '@lib/cookieActions'
+import { authenticatedUserIdToCookieStorage } from '@lib/cookieActions'
 
 const RegisterPage = ({ getRegistrationOptions, verifyRegistration }:
 {
@@ -66,11 +66,11 @@ const RegisterPage = ({ getRegistrationOptions, verifyRegistration }:
       )
 
       if (user instanceof Error) {
-        setError(user.message ? user.message : 'An unknown error occurred')
+        setError(user.message ? user.message : 'An unknown Registration error occurred')
         throw user
       }
 
-      registeredUserIdToCookieStorage(user)
+      authenticatedUserIdToCookieStorage(user)
       router.push('/admin')
     } catch (err) {
       const registerError = err as Error

@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import { startAuthentication } from '@simplewebauthn/browser'
 import { AuthenticationResponseJSON } from '@simplewebauthn/typescript-types'
 import { getAuthenticationOptionsJSON, loginUser } from '@lib/login'
+import { authenticatedUserIdToCookieStorage } from '@lib/cookieActions'
 
 const Login = () => {
   const router = useRouter()
@@ -49,13 +50,13 @@ const Login = () => {
           setError(user.message ? user.message : 'An unknown Login error occurred')
           throw user
         }
+
+        authenticatedUserIdToCookieStorage(user)
+        router.push('/admin')
       } catch (err) {
         const loginError = err as Error
         setError(loginError.message)
       }
-
-      // then later router.push('/page-of-auth-content')
-      //   router.push('/admin')
     } catch (err) {
       const loginError = err as Error
       setError(loginError.message)

@@ -3,7 +3,7 @@
 import { User } from '@prisma/client'
 import getServerActionSession from '@lib/session'
 
-export const registeredUserIdToCookieStorage = async (
+export const authenticatedUserIdToCookieStorage = async (
   user: User,
 ) => {
   const session = await getServerActionSession()

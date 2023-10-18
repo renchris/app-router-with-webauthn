@@ -111,11 +111,11 @@ export const getAuthenticationOptionsJSON = async (
   return authenticationOptionsJSON
 }
 
-export const loginProcess = async (
+export const loginUser = async (
   challenge: string,
   email: string,
   authenticationResponse: AuthenticationResponseJSON,
-) => {
+): Promise<User | Error> => {
   if (authenticationResponse?.id == null) {
     throw new Error('Invalid Credentials')
   }
@@ -132,7 +132,11 @@ export const loginProcess = async (
       updatedAt: true,
       user: {
         select: {
+          id: true,
           email: true,
+          username: true,
+          createdAt: true,
+          updatedAt: true,
         },
       },
     },
@@ -166,10 +170,12 @@ export const loginProcess = async (
     throw error
   }
 
-  if (!verification.verified || email !== userCredential.user.email) {
+  const { user } = userCredential
+
+  if (!verification.verified || email !== user.email) {
     throw new Error('Login verification failed')
   }
 
-  console.log(`Logged in as user ${userCredential.userId}`)
-  return userCredential.userId
+  console.log(`Logged in as user ${user.id}`)
+  return user
 }

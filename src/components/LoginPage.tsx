@@ -5,7 +5,7 @@ import { supported, get } from '@github/webauthn-json'
 import { useRouter } from 'next/navigation'
 import { startAuthentication } from '@simplewebauthn/browser'
 import { AuthenticationResponseJSON } from '@simplewebauthn/typescript-types'
-import { getAuthenticationOptionsJSON, loginProcess } from '@lib/login'
+import { getAuthenticationOptionsJSON, loginUser } from '@lib/login'
 
 const Login = () => {
   const router = useRouter()
@@ -34,20 +34,25 @@ const Login = () => {
         authenticationOptionsJSON,
       )
 
-      // then later verifyAuthentication(userCredential, challenge, authenticationResponse)
-      /**
+      // using startAuthentication instead of .get() for our get navigator credentials,
+      // we have authenticationResponse.id: Base64URLString to be the credential.id
+
       try {
-        loginProcess(
+        const user = await
+        loginUser(
           challenge,
-          credential,
           email,
           authenticationResponse,
         )
+
+        if (user instanceof Error) {
+          setError(user.message ? user.message : 'An unknown Login error occurred')
+          throw user
+        }
       } catch (err) {
         const loginError = err as Error
         setError(loginError.message)
       }
-       */
 
       // then later router.push('/page-of-auth-content')
       //   router.push('/admin')

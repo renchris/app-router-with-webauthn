@@ -113,11 +113,10 @@ export const getAuthenticationOptionsJSON = async (
 
 export const loginProcess = async (
   challenge: string,
-  credential: PublicKeyCredentialWithAssertionJSON,
   email: string,
   authenticationResponse: AuthenticationResponseJSON,
 ) => {
-  if (credential?.id == null) {
+  if (authenticationResponse?.id == null) {
     throw new Error('Invalid Credentials')
   }
 
@@ -138,7 +137,7 @@ export const loginProcess = async (
       },
     },
     where: {
-      externalId: credential.id,
+      externalId: authenticationResponse.id,
     },
   })
 

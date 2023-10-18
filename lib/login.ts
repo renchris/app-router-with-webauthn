@@ -54,7 +54,7 @@ export const verifyAuthenticationStep = async (
   // let matchedCredential: Credential | undefined
 
   const dbAuthenticator: AuthenticatorDevice = {
-    credentialID: await base64urlToBuffer(userCredential.externalId),
+    credentialID: new Uint8Array(Buffer.from(userCredential.externalId, 'base64')),
     credentialPublicKey: userCredential.publicKey,
     counter: userCredential.signCount,
   }

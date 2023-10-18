@@ -1,17 +1,17 @@
 'use server'
 
-import {
-  type VerifiedAuthenticationResponse,
+import type {
+  VerifiedAuthenticationResponse,
   GenerateAuthenticationOptionsOpts,
-
   VerifyAuthenticationResponseOpts,
-  verifyAuthenticationResponse,
 } from '@simplewebauthn/server'
-import { PublicKeyCredentialWithAssertionJSON } from '@github/webauthn-json'
 import {
+  verifyAuthenticationResponse,
+  generateAuthenticationOptions,
+} from '@simplewebauthn/server'
+import type {
   AuthenticationResponseJSON,
   PublicKeyCredentialRequestOptionsJSON,
-
   AuthenticatorDevice,
 } from '@simplewebauthn/typescript-types'
 import prisma from '@lib/prisma'
@@ -22,10 +22,7 @@ import {
 import {
   User, Credential,
 } from '@prisma/client'
-import { generateAuthenticationOptions } from '@simplewebauthn/server'
 import { setChallengeToCookieStorage, clearCookies } from '@lib/cookieActions'
-
-import { base64urlToBuffer } from '@lib/auth'
 
 const generateAuthenticationOptionsStep = async (
   usersCredentials: Credential[] | Error,

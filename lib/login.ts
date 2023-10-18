@@ -78,7 +78,7 @@ export const verifyAuthenticationStep = async (
     const opts: VerifyAuthenticationResponseOpts = {
       response: authenticationResponse,
       expectedChallenge: challenge,
-      expectedOrigin: 'https://localhost',
+      expectedOrigin: 'http://localhost:3000',
       expectedRPID: 'localhost',
       authenticator: dbAuthenticator,
       requireUserVerification: true,

@@ -1,7 +1,8 @@
 'use server'
 
-import { getRegisteredUserIdFromCookieStorage } from '@lib/cookieActions'
 import Link from 'next/link'
+import { getRegisteredUserIdFromCookieStorage } from '@lib/cookieActions'
+import LogoutButton from 'src/components/LogoutButton'
 
 async function getUserId(): Promise<number | string> {
   const userId = await getRegisteredUserIdFromCookieStorage()
@@ -21,6 +22,7 @@ const Admin = async () => {
       <h2>
         <Link href="/">Back To Home Page</Link>
       </h2>
+      <LogoutButton />
     </>
   )
 }

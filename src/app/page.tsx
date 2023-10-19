@@ -12,6 +12,9 @@ const Home = () => (
       <li>
         <Link href="/login">Login</Link>
       </li>
+      <li>
+        <Link href="/admin">Admin (Authenticated Page) </Link>
+      </li>
     </ul>
   </div>
 )

@@ -1,7 +1,7 @@
 'use client'
 
 import { FormEvent, useEffect, useState } from 'react'
-import { supported, get } from '@github/webauthn-json'
+import { supported } from '@github/webauthn-json'
 import { useRouter } from 'next/navigation'
 import { startAuthentication } from '@simplewebauthn/browser'
 import { AuthenticationResponseJSON } from '@simplewebauthn/typescript-types'

@@ -49,26 +49,11 @@ export const verifyAuthenticationStep = async (
 ): Promise<VerifiedAuthenticationResponse> => {
   let verification: VerifiedAuthenticationResponse
 
-  // const responseCredIDBuffer = await base64urlToBuffer(authenticationResponse.rawId)
-  // let dbAuthenticator: AuthenticatorDevice | undefined
-  // let matchedCredential: Credential | undefined
-
   const dbAuthenticator: AuthenticatorDevice = {
     credentialID: new Uint8Array(Buffer.from(userCredential.externalId, 'base64')),
     credentialPublicKey: userCredential.publicKey,
     counter: userCredential.signCount,
   }
-
-  // userCredentials.forEach((credential) => {
-  //   if (Uint8ArraysAreEqual(credential.publicKey, responseCredIDBuffer)) {
-  //     dbAuthenticator = {
-  //       credentialID: await base64urlToBuffer(credential.externalId),
-  //       credentialPublicKey: credential.publicKey,
-  //       counter: credential.signCount,
-  //     }
-  //     matchedCredential = credential
-  //   }
-  // })
 
   if (!dbAuthenticator) {
     throw new Error('Authenticator is not registered with this site')
@@ -92,7 +77,6 @@ export const verifyAuthenticationStep = async (
   const { verified, authenticationInfo } = verification
 
   if (verified) {
-    // Update the authenticator's counter in the DB to the newest count in the authentication
     updateCredentialSignCount(userCredential.externalId, authenticationInfo.newCounter)
   }
 

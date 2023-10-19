@@ -35,9 +35,6 @@ const Login = () => {
         authenticationOptionsJSON,
       )
 
-      // using startAuthentication instead of .get() for our get navigator credentials,
-      // we have authenticationResponse.id: Base64URLString to be the credential.id
-
       try {
         const user = await
         loginUser(

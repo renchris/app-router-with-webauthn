@@ -98,16 +98,13 @@ This project is a work in progress to create a working example of the implementa
 
     Click `Login` to go to the Login page. Enter the email you used during the Register step. Click Login.
 
-    A prompt from the browser will come up that says `Choose a passkey`. Click the passkey with the respective email.
-
     A prompt from the device system will come up that says `"Your Browser" is trying to verify your identity on localhost. Touch ID or enter your password to allow this.` Enter in your Touch ID.
 
-    
-    Your passkey credential SHOULD now have been returned as a response to be verified or not.
+    You will now be re-directed to the Admin Page. The authenticated content will show your User ID number.
 
-    HOWEVER, the current issue is that another prompt comes up saying `Use your passkey` with the options of a phone or tablet or USB security key, and not the passkey from in browser that we are using.
+1. **Logout the User.**
 
-    This is where development is currently stuck at.
+    From the Admin Page, click the `Logout` button. The cookies of your user session will be cleared and you will be re-directed to the Home Page.
 
 ## 🧐 What's inside?
 
@@ -127,6 +124,7 @@ A quick look at the top-level files and directories where we made our feature ch
     └── app
          └── components
             ├── LoginPage.tsx
+            ├── LogoutButton.tsx
             └── RegisterPage.tsx
 
 1. **`/lib`**: This directory will contain all of the `use server` internal functions that our components and functions will use.
@@ -150,6 +148,8 @@ A quick look at the top-level files and directories where we made our feature ch
 1. **`/src/app`**: This directory will contain all of the code related to what you will see on the front-end of the site. `src` is a convention for “source code” and `app` is the convention for “app router”.
 
 1. **`src/app/components/LoginPage.tsx`**: This `use client` file contains the  page component and client-side functions for the Login Page.
+
+1. **`src/app/components/LogoutButton.tsx`**: This `use client` file contains the logout button component that clears the cookies and redirects the user to the Home Page when clicked.
 
 1. **`src/app/components/RegisterPage.tsx`**: This `use client` file contains the  page component and client-side functions for the Register Page.
 

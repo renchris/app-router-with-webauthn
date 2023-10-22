@@ -12,10 +12,6 @@
 
 A web application that demonstrates a NextJS App Router project implementing user authentication with Passkeys using [SimpleWebAuthn](https://simplewebauthn.dev/docs/).
 
-## 🤝 WebAuthN and NextJS
-
-This project is a work in progress to create a working example of the implementation of Passkeys with SimpleWebAuthn in a NextJS App Router project to be used as a starting template all developers to use.
-
 ## 📚 Important Libraries
 
 
@@ -25,7 +21,17 @@ This project is a work in progress to create a working example of the implementa
 
 - [renchris' fork of the Iron Session V8 branch](https://github.com/renchris/iron-session/tree/v8-as-dependency)  allows Iron Session to be used with React Server Components and NextJS Server Actions.
 
+## 🤝 WebAuthN to Production
 
+This project follows closely to [Ian Mitchell](https://github.com/IanMitchell)'s NextJS WebAuthN demo with the implementation being with NextJS App Router and Server Action Iron Session.
+
+To take this this demo to a secure production application, you will additionally need to create a multi-step registration flow.
+
+Per his note from his [demo and blog]((https://ianmitchell.dev/blog/nextjs-and-webauthn)):
+
+*If you're following this guide to add WebAuthn to an application you intend to ship, it's important to create a multi-step registration flow instead of asking for a username and email upfront. When you call create, the browser will create the login - your application can't remove it later. If your server validation fails (let's say because the username was registered by someone else) the browser will still have created an account.*
+
+*Instead of having a registration all on one page, create a new model called Account, move username and email to that, and create a one-to-one relationship with the User model. Then, after a user clicks register and creates a User, prompt them for an email and username on a second page to create a new Account model. Any validation failures on this step won't impact the newly created User model and its Credential!*
 
 ## 🚀 Usage
 

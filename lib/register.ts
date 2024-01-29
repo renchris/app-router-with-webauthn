@@ -12,7 +12,7 @@ import type {
 import type {
   PublicKeyCredentialCreationOptionsJSON,
   RegistrationResponseJSON,
-} from '@simplewebauthn/typescript-types'
+} from '@simplewebauthn/types'
 import { generateChallenge } from '@lib/auth'
 
 const HOST_SETTINGS = {

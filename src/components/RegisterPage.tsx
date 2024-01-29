@@ -6,7 +6,7 @@ import {
 } from 'react'
 import { supported } from '@github/webauthn-json'
 import { useRouter } from 'next/navigation'
-import { PublicKeyCredentialCreationOptionsJSON, RegistrationResponseJSON } from '@simplewebauthn/typescript-types'
+import type { PublicKeyCredentialCreationOptionsJSON, RegistrationResponseJSON } from '@simplewebauthn/types'
 import { startRegistration } from '@simplewebauthn/browser'
 import type { VerifiedRegistrationResponse } from '@simplewebauthn/server'
 import Link from 'next/link'

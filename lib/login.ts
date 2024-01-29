@@ -13,7 +13,7 @@ import type {
   AuthenticationResponseJSON,
   PublicKeyCredentialRequestOptionsJSON,
   AuthenticatorDevice,
-} from '@simplewebauthn/typescript-types'
+} from '@simplewebauthn/types'
 import prisma from '@lib/prisma'
 import {
   getCredentialsOfUser, getUserFromEmail,

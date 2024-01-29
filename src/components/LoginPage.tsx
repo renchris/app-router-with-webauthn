@@ -4,7 +4,7 @@ import { FormEvent, useEffect, useState } from 'react'
 import { supported } from '@github/webauthn-json'
 import { useRouter } from 'next/navigation'
 import { startAuthentication } from '@simplewebauthn/browser'
-import { AuthenticationResponseJSON } from '@simplewebauthn/typescript-types'
+import type { AuthenticationResponseJSON } from '@simplewebauthn/types'
 import { getAuthenticationOptionsJSON, loginUser } from '@lib/login'
 import { authenticatedUserIdToCookieStorage } from '@lib/cookieActions'
 

@@ -9,7 +9,7 @@ import type {
   GenerateRegistrationOptionsOpts,
   VerifiedRegistrationResponse,
 } from '@simplewebauthn/server'
-import {
+import type {
   PublicKeyCredentialCreationOptionsJSON,
   RegistrationResponseJSON,
 } from '@simplewebauthn/typescript-types'
@@ -40,7 +40,7 @@ export const getRegistrationOptions = async (
   }
 
   const registrationOptions:
-  PublicKeyCredentialCreationOptionsJSON = generateRegistrationOptions(
+  PublicKeyCredentialCreationOptionsJSON = await generateRegistrationOptions(
     registrationOptionsParameters,
   )
 

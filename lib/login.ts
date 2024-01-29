@@ -37,7 +37,7 @@ Promise<PublicKeyCredentialRequestOptionsJSON> => {
     userVerification: 'required',
     rpID: 'localhost',
   }
-  const authenticationOptionsJSON = generateAuthenticationOptions(loginOptionsParameters)
+  const authenticationOptionsJSON = await generateAuthenticationOptions(loginOptionsParameters)
   await setChallengeToCookieStorage(authenticationOptionsJSON.challenge)
   return authenticationOptionsJSON
 }

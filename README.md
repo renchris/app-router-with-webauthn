@@ -14,10 +14,9 @@ A web application that demonstrates a NextJS App Router project implementing use
 
 ## 📚 Important Libraries
 
-
 - [SimpleWebAuthn](https://simplewebauthn.dev/docs/) allows for TypeScript WebAuthN integration.
 
-- [Prisma](https://www.prisma.io/) allows for TypeScript type-safe data modelling and database querying connection.
+- [Drizzle](https://orm.drizzle.team/docs/overview) allows for TypeScript type-safe data modelling and database querying connection. For usage with [Prisma](https://www.prisma.io/) please refer to the `with-prisma` branch
 
 - [renchris' fork of the Iron Session V8 branch](https://github.com/renchris/iron-session/tree/v8-as-dependency)  allows Iron Session to be used with React Server Components and NextJS Server Actions.
 
@@ -43,45 +42,31 @@ Per his note from his [demo and blog]((https://ianmitchell.dev/blog/nextjs-and-w
     pnpm install
     ```
 
-1. **Set up the Prisma database :**
+1. **Set up the Iron Session instance:**
 
-    Create an `.env` file that contains the values to your database URL and secret cookie password.
+    Create an `.env` file that contains the values to your secret cookie password needed for encrypted cookies with Iron Session.
 
-    For an external database, you may set up your Prisma database with [PostgreSQL on RDS](https://www.prisma.io/dataguide/postgresql/setting-up-postgresql-on-rds).
-
-    ```
-    DATABASE_URL=postgresql://rds-instance-username:rds-instance-password@database-name.instance-id.aws-region.rds.amazonaws.com:5432/postgres
+    ```env
     SECRET_COOKIE_PASSWORD=passwordpasswordpasswordpassword
     ```
 
-    For a local file database, you may set up your Prisma databse with [SQLite](https://www.prisma.io/docs/getting-started/quickstart)
+1. **Set up the Drizzle database :**
 
-    ```
-    DATABASE_URL="file:./dev.db"
-    SECRET_COOKIE_PASSWORD=passwordpasswordpasswordpassword
-    ```
+    We are using SQLite for our local file database. For an alternative database, you may set up your `drizzle/db.ts` and `drizzle.config.ts` differently for the appropriate database and driver.
 
-    If you choose to run a local database file instead, in the `schema.prisma` file, replace the provider from `"postgresql"` to `"sqlite"`
-
-    ```diff
-    datasource db {
-    -   provider = "postgresql"
-    +   provider = "sqlite"
-        url      = env("DATABASE_URL")
-    }
-    ```
-
-
-1. **Create the Prisma database file.**
-
-    Remove the current migration directory and start a new migration history with prisma migrate dev
+    Initialize the new SQLite database
     
     Run
     ```bash
-    rm -rf prisma/migrations 
-    pnpm prisma migrate dev
+    pnpm push
     ```
+
+    You have now generated the database file `sqlite.db` can now access a UI view of the tables
     
+    Run
+    ```bash
+    pnpm drizzle-kit studio
+    ```
 
 1. **Run the web application.**
 
@@ -121,11 +106,11 @@ A quick look at the top-level files and directories where we made our feature ch
     ├── cookieActions.ts
     ├── database.ts
     ├── login.ts
-    ├── prisma.ts
     ├── register.ts
     └── session.ts
-    prisma
-    └── schema.prisma
+    drizzle
+    ├── db.ts
+    └── schema.ts
     src
     └── app
          └── components
@@ -143,13 +128,15 @@ A quick look at the top-level files and directories where we made our feature ch
 
 1. **`lib/login.ts`**: This file contains the functions that are involved with the user log in process.
 
-1. **`lib/prisma.ts`**: This file sets up the Prisma Client that is used by Prisma functions in the `/lib/database.ts` file.
-
 1. **`lib/register.ts`**: This file contains the functions that are involved with the user registration process.
 
 1. **`lib/session.ts`**: This file sets up the Iron Session object used by the session functions in the `lib/cookieAction.ts` file.
 
-1. **`prisma.schema.ts`**: This is the configuration file that sets up Prisma with the database source type and data model definition.
+1. **`/drizzle`**: This directory will contain the drizzle files to set up and define our Drizzle database instance and tables.
+
+1. **`drizzle/db.ts`**: This file sets up the Drizzle database instance that is used by Drizzle functions in the `/lib/database.ts` and `/lib/login.ts` files.
+
+1. **`/drizzle/schema.ts`**: This is the configuration file that sets up Drizzle table data model definitions.
 
 1. **`/src/app`**: This directory will contain all of the code related to what you will see on the front-end of the site. `src` is a convention for “source code” and `app` is the convention for “app router”.
 

@@ -13,7 +13,6 @@
   "dependencies": {
     "@github/webauthn-json": "^2.1.1",
     "@next/eslint-plugin-next": "^14.0.4",
-    "@prisma/client": "^5.8.1",
     "@simplewebauthn/browser": "^9.0.1",
     "@simplewebauthn/server": "^9.0.1",
     "@simplewebauthn/types": "^9.0.1",
@@ -45,7 +44,6 @@
     "eslint-config-next": "14.0.4",
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-jsx-a11y": "^6.8.0",
-    "eslint-plugin-react": "^7.33.2",
-    "prisma": "^5.8.1"
+    "eslint-plugin-react": "^7.33.2"
   }
 }

@@ -14,7 +14,6 @@ import type {
   PublicKeyCredentialRequestOptionsJSON,
   AuthenticatorDevice,
 } from '@simplewebauthn/types'
-import prisma from '@lib/prisma'
 import {
   getCredentialsOfUser, getUserFromEmail,
   updateCredentialSignCount,

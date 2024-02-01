@@ -1,6 +1,6 @@
 'use server'
 
-import { User } from '@prisma/client'
+import type { User } from 'drizzle/schema'
 import getServerActionSession from '@lib/session'
 
 export const authenticatedUserIdToCookieStorage = async (

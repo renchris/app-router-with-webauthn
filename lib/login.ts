@@ -19,10 +19,12 @@ import {
   getCredentialsOfUser, getUserFromEmail,
   updateCredentialSignCount,
 } from '@lib/database'
-import {
-  User, Credential,
-} from '@prisma/client'
 import { setChallengeToCookieStorage, clearCookies } from '@lib/cookieActions'
+import db from 'drizzle/db'
+import {
+  type Credential, type User, credential, user as drizzleUser,
+} from 'drizzle/schema'
+import { eq } from 'drizzle-orm'
 
 const generateAuthenticationOptionsStep = async (
   usersCredentials: Credential[] | Error,
@@ -31,7 +33,7 @@ Promise<PublicKeyCredentialRequestOptionsJSON> => {
   const loginOptionsParameters: GenerateAuthenticationOptionsOpts = {
     timeout: 60000,
     allowCredentials: (usersCredentials as Credential[]).map((userCredential) => ({
-      id: new Uint8Array(Buffer.from(userCredential.externalId, 'base64')),
+      id: new Uint8Array(Buffer.from(userCredential.externalID, 'base64')),
       type: 'public-key',
     })),
     userVerification: 'required',
@@ -50,7 +52,7 @@ export const verifyAuthenticationStep = async (
   let verification: VerifiedAuthenticationResponse
 
   const dbAuthenticator: AuthenticatorDevice = {
-    credentialID: new Uint8Array(Buffer.from(userCredential.externalId, 'base64')),
+    credentialID: new Uint8Array(Buffer.from(userCredential.externalID, 'base64')),
     credentialPublicKey: userCredential.publicKey,
     counter: userCredential.signCount,
   }
@@ -77,7 +79,7 @@ export const verifyAuthenticationStep = async (
   const { verified, authenticationInfo } = verification
 
   if (verified) {
-    updateCredentialSignCount(userCredential.externalId, authenticationInfo.newCounter)
+    updateCredentialSignCount(userCredential.externalID, authenticationInfo.newCounter)
   }
 
   await clearCookies()
@@ -104,33 +106,15 @@ export const loginUser = async (
     throw new Error('Invalid Credentials')
   }
 
-  const userCredential = await prisma.credential.findUnique({
-    select: {
-      id: true,
-      userId: true,
-      name: true,
-      externalId: true,
-      publicKey: true,
-      signCount: true,
-      createdAt: true,
-      updatedAt: true,
-      user: {
-        select: {
-          id: true,
-          email: true,
-          username: true,
-          createdAt: true,
-          updatedAt: true,
-        },
-      },
-    },
-    where: {
-      externalId: authenticationResponse.id,
-    },
-  })
+  const userCredential = db
+    .select()
+    .from(credential)
+    .where(eq(credential.externalID, authenticationResponse.id))
+    .prepare()
+    .get()
 
   if (userCredential == null) {
-    throw new Error('Unknown User')
+    throw new Error('Unknown User Credential')
   }
 
   const verification: VerifiedAuthenticationResponse = await
@@ -141,20 +125,33 @@ export const loginUser = async (
   )
 
   try {
-    await prisma.credential.update({
-      data: {
+    db
+      .update(credential)
+      .set({
         signCount: verification.authenticationInfo.newCounter,
-      },
-      where: {
-        id: userCredential.id,
-      },
-    })
+      })
+      .where(
+        eq(credential.id, userCredential.id),
+      )
+      .prepare()
+      .run()
   } catch (error) {
     console.error(error)
     throw error
   }
 
-  const { user } = userCredential
+  const user = db
+    .select()
+    .from(drizzleUser)
+    .where(
+      eq(drizzleUser.id, userCredential.userID),
+    )
+    .prepare()
+    .get()
+
+  if (user == null) {
+    throw new Error('Unknown User')
+  }
 
   if (!verification.verified || email !== user.email) {
     throw new Error('Login verification failed')

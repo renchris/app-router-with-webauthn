@@ -3,8 +3,11 @@
 import {
   type VerifiedRegistrationResponse,
 } from '@simplewebauthn/server'
-import { User, Credential } from '@prisma/client'
-import prisma from '@lib/prisma'
+import {
+  type User, type Credential, user as drizzleUser, credential,
+} from 'drizzle/schema'
+import db from 'drizzle/db'
+import { eq } from 'drizzle-orm'
 import { clean, binaryToBase64url } from '@lib/auth'
 
 export const registerUser = async (
@@ -18,25 +21,37 @@ export const registerUser = async (
     throw new Error('Registration failed')
   }
 
-  const existingUser = await prisma.user.findUnique({
-    where: {
-      email,
-    },
-  })
+  const existingUser = db
+    .select()
+    .from(drizzleUser)
+    .where(eq(drizzleUser.email, email))
+    .prepare()
+    .get()
 
   if (!existingUser) {
-    const user = await prisma.user.create({
-      data: {
+    const user = db
+      .insert(drizzleUser)
+      .values({
         email,
         username,
-        credentials: {
-          create: {
-            externalId: await clean(await binaryToBase64url(credentialID)),
-            publicKey: Buffer.from(credentialPublicKey),
-          },
-        },
-      },
-    })
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      })
+      .returning()
+      .prepare()
+      .get()
+
+    const insertCredentialStatementQuery = db
+      .insert(credential)
+      .values({
+        userID: user.id,
+        externalID: await clean(await binaryToBase64url(credentialID)),
+        publicKey: Buffer.from(credentialPublicKey),
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      })
+
+    insertCredentialStatementQuery.run()
 
     console.log(`Registered new user ${user.id}`)
     return user
@@ -45,11 +60,13 @@ export const registerUser = async (
 }
 
 export async function getUserFromEmail(email: string): Promise<User | Error> {
-  const existingUser = await prisma.user.findUnique({
-    where: {
-      email,
-    },
-  })
+  const existingUser = db
+    .select()
+    .from(drizzleUser)
+    .where(eq(drizzleUser.email, email))
+    .prepare()
+    .get()
+
   if (!existingUser) {
     throw new Error('User with this email does not exist')
   }
@@ -58,12 +75,18 @@ export async function getUserFromEmail(email: string): Promise<User | Error> {
 
 export async function getCredentialsOfUser(user: User): Promise<Credential[] | Error> {
   try {
-    const userId = user.id
-    const credentials = await prisma.credential.findMany({
-      where: {
-        userId,
-      },
-    })
+    const userID = user.id
+    const credentials = db
+      .select()
+      .from(credential)
+      .where(eq(credential.userID, userID))
+      .prepare()
+      .all()
+
+    if (credentials.length === 0) {
+      throw new Error('No credentials found for the user')
+    }
+
     return credentials
   } catch (error) {
     console.error('Error fetching credentials:', error)
@@ -76,10 +99,17 @@ export async function updateCredentialSignCount(
   newSignCount: number,
 ) {
   try {
-    const updatedCredential = await prisma.credential.update({
-      where: { externalId: credentialIdToUpdate },
-      data: { signCount: newSignCount },
-    })
+    const updatedCredential = db
+      .update(credential)
+      .set({
+        signCount: newSignCount,
+      })
+      .where(
+        eq(credential.externalID, credentialIdToUpdate),
+      )
+      .returning()
+      .prepare()
+      .get()
 
     console.log('Updated Credential:', updatedCredential)
   } catch (error) {

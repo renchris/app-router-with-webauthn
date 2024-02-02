@@ -28,3 +28,14 @@ export const credential = sqliteTable('credential', {
 
 export type Credential = InferSelectModel<typeof credential>
 export type InsertCredential = InferInsertModel<typeof credential>
+
+export const userRelations = relations(user, ({ many }) => ({
+  credential: many(credential),
+}))
+
+export const credentialRelations = relations(credential, ({ one }) => ({
+  user: one(user, {
+    fields: [credential.userID],
+    references: [user.id],
+  }),
+}))

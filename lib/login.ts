@@ -106,14 +106,18 @@ export const loginUser = async (
   }
 
   const userCredential = db
-    .select()
-    .from(credential)
-    .where(eq(credential.externalID, authenticationResponse.id))
+    .query
+    .credential
+    .findFirst({
+      with: {
+        user: true,
+      },
+    })
     .prepare()
     .get()
 
   if (userCredential == null) {
-    throw new Error('Unknown User Credential')
+    throw new Error('Unknown User')
   }
 
   const verification: VerifiedAuthenticationResponse = await
@@ -139,18 +143,7 @@ export const loginUser = async (
     throw error
   }
 
-  const user = db
-    .select()
-    .from(drizzleUser)
-    .where(
-      eq(drizzleUser.id, userCredential.userID),
-    )
-    .prepare()
-    .get()
-
-  if (user == null) {
-    throw new Error('Unknown User')
-  }
+  const { user } = userCredential
 
   if (!verification.verified || email !== user.email) {
     throw new Error('Login verification failed')

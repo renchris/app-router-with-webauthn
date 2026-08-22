@@ -23,7 +23,9 @@ declare module 'iron-session' {
 }
 
 const getServerActionSession = async () => {
-  const session = getServerActionIronSession<IronSessionData>(sessionOptions, cookies())
+  // Next 15 made cookies() async, so it now hands back a Promise rather than the
+  // ReadonlyRequestCookies store itself; iron-session wants the store.
+  const session = getServerActionIronSession<IronSessionData>(sessionOptions, await cookies())
   return session
 }
 
